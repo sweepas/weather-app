@@ -8,6 +8,9 @@ import { parseISO } from "date-fns/parseISO";
 import Container from "@/components/Container";
 import kelvinToCelciusConverter from "@/utils/kelvinToCelciusConverter";
 import WeatherIcon from "@/components/WeatherIcon";
+import ForecastDetails from "@/components/ForecastDetails";
+import { WiCloudyGusts } from "react-icons/wi";
+
 
 //https://api.openweathermap.org/data/2.5/forecast?q=london&appid=f5db868ac34a3272f8f044a223476065
 
@@ -79,7 +82,7 @@ export default function Home() {
   console.log(process.env.NEXT_PUBLIC_WEATHER_KEY);
   const todayData = data?.list[0];
 
-  console.log("data", data?.list, todayData?.main.temp);
+  console.log("data", data?.list[0], todayData);
   if (isLoading)
     return (
       <div className="flex items-center min-h-screen justify-center">
@@ -90,14 +93,16 @@ export default function Home() {
   return (
     <div className="flex flex-col gap-4 bg-gray-100 min-h-screen">
       <Navbar />
-      <main className="px-3 max-w-7xl flex-col gap-9 w-full pb-10 pt-4">
+      <main className="px-3 max-w-7xl mx-auto flex-col gap-9 w-full pb-10 pt-4">
         {/* Todays weather */}
         <section className="space-y-4">
           <div className="space-y-2">
             <h2 className="flex gap-1 text-2xl items-end">
               <p>{format(parseISO(todayData?.dt_txt ?? ""), "EEEE")}</p>
               <p className="text-sm">
-                ({format(parseISO(todayData?.dt_txt ?? ""), "dd-MM-yyyy")})
+                (
+                {format(parseISO(todayData?.dt_txt ?? ""), "dd-MM-yyyy h:mm a")}
+                )
               </p>
             </h2>
             <div>
@@ -131,21 +136,38 @@ export default function Home() {
                   </p>
                 </div>
                 <div className="flex gap-10 sm:gap-16 overflow-x-auto w-full justify-between pr-3">
-                  {data?.list.map((interval, index)=>{
+                  {data?.list.map((interval, index) => {
                     return (
-                      <div key={index} className="flex flex-col justify-between gap-2 items-center text-xs font-semibold">
-                        <p className="whitespace-nowrap">{format(parseISO(interval.dt_txt), 'h:mm a')}</p>
+                      <div
+                        key={index}
+                        className="flex flex-col justify-between gap-2 items-center text-xs font-semibold"
+                      >
+                        <p className="whitespace-nowrap">
+                          {format(parseISO(interval.dt_txt), "h:mm a")}
+                        </p>
                         <div>
-                          <WeatherIcon iconName={interval.weather[0].icon}/>
+                          <WeatherIcon iconName={interval.weather[0].icon} />
                         </div>
                         <p>{kelvinToCelciusConverter(interval.main.temp)}°</p>
                       </div>
-                    )
+                    );
                   })}
                 </div>
               </Container>
+              <div className="flex gap-4 my-4">
+                <Container className="w-fit flex flex-col px-6 py-4 capitalize text-center">
+                  <p>{todayData?.weather[0].description}</p>
+                  <WeatherIcon iconName={todayData?.weather[0].icon} />
+                </Container>
+                <Container className="bg-yellow-300/80 justify-between px-6">
+                  <ForecastDetails />
+                </Container>
+              </div>
             </div>
           </div>
+        </section>
+        <section className="w-full flex flex-col gap-4">
+          <h2 className="flex gap-1 text-2xl items-end">Forecast (7 days)</h2>
         </section>
       </main>
     </div>
