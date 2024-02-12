@@ -11,6 +11,7 @@ export default function WeatherIcon(props: React.HTMLProps<HTMLDivElement> & {ic
       width={100}
       height={100}
         className="absolute w-full h-full"
+        loading="lazy"
         src={`https://openweathermap.org/img/wn/${props.iconName}@4x.png`}
         alt='weather-icon'
       />
