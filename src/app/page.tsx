@@ -14,12 +14,9 @@ import ForecastDetails from "@/components/ForecastDetails";
 import { WiCloudyGusts } from "react-icons/wi";
 import MainTemp from "@/components/MainTemp";
 import DailyForecastComponent from "@/components/DailyForecastComponent";
-import IndexPage from "@/components/IndexPage";
 import { useAtom } from "jotai";
 import { placeAtom, loadingLocationAtom } from "@/app/atom";
 import { useEffect } from "react";
-
-//https://api.openweathermap.org/data/2.5/forecast?q=london&appid=f5db868ac34a3272f8f044a223476065
 
 interface WeatherDetail {
   dt: number;
@@ -83,12 +80,14 @@ export default function Home() {
     "repoData",
     async () => {
       const { data } = await axios.get(
-        `https://api.openweathermap.org/data/2.5/forecast?q=${place}&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}&cnt=56`
+        `https://api.openweathermap.org/data/2.5/forecast?q=${place}&cnt=100&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`
       );
       return data;
     }
   );
   const todayData = data?.list[0];
+
+  
 
   useEffect(() => {
     refetch();
@@ -106,9 +105,10 @@ export default function Home() {
     return data?.list.find((entry) => {
       const entryDate = new Date(entry.dt * 1000).toISOString().split("T")[0];
       const entryTime = new Date(entry.dt * 1000).getHours();
-      return entryDate === date && entryTime >= 6;
+      return entryDate === date && entryTime >= 15;
     });
   });
+
 
   if (isLoading)
     return (
@@ -119,7 +119,6 @@ export default function Home() {
 
   return (
     <div className="flex flex-col gap-4 bg-blue-100 min-h-screen">
-      <IndexPage />
       <Navbar location={data?.city.name} />
       <main className="px-3 max-w-7xl mx-auto flex-col gap-9 w-full pb-10 pt-4">
         {/* Todays weather */}
@@ -178,7 +177,7 @@ export default function Home() {
                     </div>
                   </Container>
                   <div className="flex gap-4 my-4">
-                    <Container className="w-fit flex flex-col px-6 py-4 capitalize text-center bg-blue-300">
+                    <Container className="w-fit flex flex-col px-6 py-4 capitalize text-center items-center bg-blue-300">
                       <p>{todayData?.weather[0].description}</p>
                       <WeatherIcon
                         iconName={todayData?.weather[0].icon ?? ""}
@@ -275,3 +274,4 @@ const LoadingSkeleton = () => {
     </section>
   );
 };
+//
